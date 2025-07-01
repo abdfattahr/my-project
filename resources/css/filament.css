@@ -1,0 +1,73 @@
+/* أنماط افتراضية (Light Mode) */
+.stat-card-success {
+    background-color: #e8f5e9 !important; /* خلفية خضراء فاتحة */
+    color: #2ecc71 !important; /* لون النص أخضر */
+    padding: 10px !important;
+    border-radius: 8px !important;
+}
+
+.stat-card-primary {
+    background-color: #e3f2fd !important; /* خلفية زرقاء فاتحة */
+    color: #3498db !important; /* لون النص أزرق */
+    padding: 10px !important;
+    border-radius: 8px !important;
+}
+
+.stat-card-info {
+    background-color: #e0f7fa !important; /* خلفية تركواز فاتحة */
+    color: #1abc9c !important; /* لون النص تركواز */
+    padding: 10px !important;
+    border-radius: 8px !important;
+}
+
+.stat-card-secondary {
+    background-color: #f3e8ff !important; /* خلفية بنفسجية فاتحة */
+    color: #9b59b6 !important; /* لون النص بنفسجي */
+    padding: 10px !important;
+    border-radius: 8px !important;
+}
+
+.stat-card-danger {
+    background-color: #ffebee !important; /* خلفية حمراء فاتحة */
+    color: #e74c3c !important; /* لون النص أحمر */
+    padding: 10px !important;
+    border-radius: 8px !important;
+}
+
+.stat-card-warning {
+    background-color: #fffde7 !important; /* خلفية صفراء فاتحة */
+    color: #f1c40f !important; /* لون النص أصفر */
+    padding: 10px !important;
+    border-radius: 8px !important;
+}
+
+/* أنماط الوضع الداكن (Dark Mode) */
+[data-theme="dark"] .stat-card-success {
+    background-color: #2a4d3e !important; /* خلفية خضراء داكنة */
+    color: #2ecc71 !important;
+}
+
+[data-theme="dark"] .stat-card-primary {
+    background-color: #1e3a5f !important; /* خلفية زرقاء داكنة */
+    color: #3498db !important;
+}
+
+[data-theme="dark"] .stat-card-info {
+    background-color: #1a4a4a !important; /* خلفية تركواز داكنة */
+    color: #1abc9c !important;
+}
+
+[data-theme="dark"] .stat-card-secondary {
+    background-color: #3d2a4d !important; /* خلفية بنفسجية داكنة */
+    color: #9b59b6 !important;
+}
+
+[data-theme="dark"] .stat-card-danger {
+    background-color: #4d2a2a !important; /* خلفية حمراء داكنة */
+    color: #e74c3c !important;
+}
+
+[data-theme="dark"] .stat-card-warning {
+    background-color: #4d4a2a !important; /* خلفية صفراء داكنة */
+    color: #f1c40f !important;
+}

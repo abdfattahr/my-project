@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* استيراد تنسيقات Filament */@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+/* استيراد تنسيقات Filament */
+@import '../../vendor/filament/filament/resources/css/app.css';
