@@ -19,8 +19,11 @@ class ProductReviewResource extends Resource
     protected static ?string $model = ProductReview::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-star';
+    
     protected static ?string $navigationLabel = 'تقييمات المنتجات';
+    
     protected static ?int $navigationSort = 3;
+
     protected static ?string $navigationGroup = 'إدارة عامة';
 
     public static function form(Form $form): Form

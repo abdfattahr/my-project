@@ -18,8 +18,11 @@ class SupermarktProductResource extends Resource
     protected static ?string $model = SupermarktProduct::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+
     protected static ?string $navigationLabel = 'كمية المنتجات';
+
     protected static ?string $navigationGroup = 'إدارة المتجر';
+
     protected static ?int $navigationSort = 11;
 
     public static function form(Form $form): Form
@@ -135,7 +138,6 @@ class SupermarktProductResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // لا حاجة لمدير علاقات هنا
         ];
     }
 
@@ -188,7 +190,7 @@ class SupermarktProductResource extends Resource
         }
         if (auth()->user()->hasRole('vendor')) {
             $supermarket = auth()->user()->supermarket;
-            return $supermarket && $record->supermarket_id === $supermarket->id; // التاجر يمكنه حذف ربط متجره فقط
+            return $supermarket && $record->supermarket_id === $supermarket->id;
         }
         return false;
     }

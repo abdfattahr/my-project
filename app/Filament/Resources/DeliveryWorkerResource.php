@@ -21,8 +21,11 @@ class DeliveryWorkerResource extends Resource
     protected static ?string $model = DeliveryWorker::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
+
     protected static ?string $navigationLabel = 'عمال التوصيل';
+
     protected static ?string $navigationGroup = 'إدارة عمال التوصيل';
+    
     protected static ?int $navigationSort = 9;
 
     public static function form(Form $form): Form

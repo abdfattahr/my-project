@@ -17,9 +17,15 @@ class PhoneResource extends Resource
     protected static ?string $model = Phone::class;
 
     protected static ?string $navigationLabel = 'أرقام الهواتف';
+
     protected static ?string $navigationGroup = 'إدارة عامة';
+
     protected static ?int $navigationSort = 1;
+
     protected static ?string $navigationIcon = 'heroicon-o-phone';
+
+        protected static ?string $recordTitleAttribute = 'phone_number';
+
     public static function form(Form $form): Form
     {
         return $form

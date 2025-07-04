@@ -30,7 +30,6 @@ class Customer_FavoritesController extends Controller
             'notes' => 'nullable|string|max:255',
         ]);
 
-        // التحقق مما إذا كان المنتج موجودًا بالفعل في المفضلة
         $exists = Customer_Favorites::where('customer_id', $request->customer_id)
             ->where('product_id', $request->product_id)
             ->where('is_active', true)

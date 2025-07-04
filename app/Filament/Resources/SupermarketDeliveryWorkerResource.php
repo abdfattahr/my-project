@@ -16,8 +16,11 @@ class SupermarketDeliveryWorkerResource extends Resource
     protected static ?string $model = Supermarket_DeliveryWorker::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-link';
+
     protected static ?string $navigationLabel = 'ربط عمال التوصيل بالمتاجر';
+
     protected static ?string $navigationGroup = 'إدارة عمال التوصيل';
+
     protected static ?int $navigationSort = 8; // الأقسام الفرعية تظهر أولاً
 
     public static function form(Form $form): Form

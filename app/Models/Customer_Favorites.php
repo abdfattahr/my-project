@@ -8,7 +8,7 @@ class Customer_Favorites extends Model
 {
     protected $table = 'Customer_Favorites';
 
-    protected $fillable = ['product_id', 'customer_id', 'notes', 'is_active']; // أضيفي is_active
+    protected $fillable = ['product_id', 'customer_id', 'notes', 'is_active']; 
 
     protected $casts = [
         'is_active' => 'boolean',

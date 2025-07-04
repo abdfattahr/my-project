@@ -55,4 +55,3 @@ h3 {
 
 <h3 id="slogan">تمتع بتجربة اللوحة التحكم وادارة المنتجات بأحدث المزايا!</h3>
 
-C:\xampp\htdocs\admin\resources\views\filament\login_extra.blade.php

@@ -19,10 +19,14 @@ class AdvertisementSupermarketResource extends Resource
     protected static ?string $model = Advertisement::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
+
     protected static ?string $navigationLabel = 'إعلانات المتجر';
+
     protected static ?string $navigationGroup = 'إدارة الإعلانات';
+
     protected static ?int $navigationSort = 7;
 
+    
     public static function form(Form $form): Form
     {
         return $form

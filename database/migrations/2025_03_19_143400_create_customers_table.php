@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('phone_number');
+            $table->string('password')->nullable();
             $table->string('postion');
             $table->integer('points')->default(0);
             $table->timestamps();
-           $table->string('password')->nullable();
         });
     }
 

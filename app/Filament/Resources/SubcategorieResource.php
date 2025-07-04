@@ -17,8 +17,11 @@ class SubcategorieResource extends Resource
     protected static ?string $model = Subcategorie::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-square-3-stack-3d';
+
     protected static ?string $navigationLabel = 'الأقسام الفرعية';
+
     protected static ?string $navigationGroup = 'إدارة المتجر';
+
     protected static ?int $navigationSort = 3;
     public static function form(Form $form): Form
     {

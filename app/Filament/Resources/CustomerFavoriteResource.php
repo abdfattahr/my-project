@@ -20,7 +20,9 @@ class CustomerFavoriteResource extends Resource
     protected static ?string $model = Customer_Favorites::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-heart';
+
     protected static ?string $navigationLabel = 'المفضلات';
+    
     protected static ?string $navigationGroup = 'إدارة عامة';
 
     public static function form(Form $form): Form

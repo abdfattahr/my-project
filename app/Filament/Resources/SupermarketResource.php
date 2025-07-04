@@ -19,10 +19,17 @@ class SupermarketResource extends Resource
     protected static ?string $model = Supermarket::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
+
     protected static ?string $navigationLabel = 'المتجر';
+
     protected static ?string $navigationGroup = 'إدارة المتجر';
+
     protected static ?string $recordTitleAttribute = 'name';
+
     protected static ?int $navigationSort = 1;
+
+    protected static ?string $activeNavigationIcon='heroicon-o-home-modern';
+
 
     public static function form(Form $form): Form
     {

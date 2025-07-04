@@ -17,6 +17,7 @@ class CustomerResource extends Resource
     protected static ?string $navigationLabel = 'الزبائن';
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    
     protected static ?string $navigationGroup = 'إدارة عامة';
 
     // تعطيل إمكانية إنشاء زبائن يدويًا

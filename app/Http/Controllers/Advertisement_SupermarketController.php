@@ -7,10 +7,8 @@ use Illuminate\Http\Request;
 
 class Advertisement_SupermarketController extends Controller
 {
-    // دالة لعرض جميع إعلانات المتاجر
     public function index()
     {
-        // جلب جميع الإعلانات مع بيانات المتجر والإعلان
         $advertisements = Advertisement_Supermarket::with(['supermarket', 'advertisement'])
             ->orderBy('date_publication', 'desc') // ترتيب حسب تاريخ النشر
             ->get();
@@ -21,7 +19,7 @@ class Advertisement_SupermarketController extends Controller
         ], 200);
     }
 
-   public function showBySupermarket(Request $request, $supermarketId)
+   public function showBySupermarket($supermarketId)
 {
     // جلب الإعلانات الخاصة بمتجر معين بناءً على supermarket_id
     $advertisements = Advertisement_Supermarket::where('supermarket_id', $supermarketId)
@@ -42,7 +40,6 @@ class Advertisement_SupermarketController extends Controller
 }
 public function showByAdvertisement($id)
 {
-    // جلب تفاصيل السجل بناءً على id جدول advertisement_supermarkets
     $advertisementDetails = Advertisement_Supermarket::where('id', $id)
         ->with(['supermarket', 'advertisement'])
         ->orderBy('date_publication', 'desc')

@@ -18,41 +18,9 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Supermarket::with([
-            'products' => function ($query) use ($request) {
-                $query->select('products.id', 'products.name', 'products.subcategory_id', 'products.trade_mark_id', 'supermarkt_products.stock');
-                // تصفية المنتجات حسب اسم المنتج
-                if ($request->has('product_name')) {
-                    $query->where('products.name', 'like', '%' . $request->input('product_name') . '%');
-                }
-                // تصفية حسب القسم الفرعي
-                if ($request->has('subcategory_id')) {
-                    $query->where('products.subcategory_id', $request->input('subcategory_id'));
-                }
-                // تصفية حسب العلامة التجارية
-                if ($request->has('trade_mark_id')) {
-                    $query->where('products.trade_mark_id', $request->input('trade_mark_id'));
-                }
-            },
-            'products.subcategory' => function ($query) use ($request) { // إضافة use ($request)
-                $query->select('id', 'name', 'main_category_id', 'icon');
-                // تصفية حسب اسم القسم الفرعي
-                if ($request->has('subcategory_name')) {
-                    $query->where('subcategories.name', 'like', '%' . $request->input('subcategory_name') . '%');
-                }
-            },
-            'products.tradeMark' => function ($query) use ($request) { // إضافة use ($request)
-                $query->select('id', 'name');
-                // تصفية حسب اسم العلامة التجارية
-                if ($request->has('trade_mark_name')) {
-                    $query->where('trade_marks.name', 'like', '%' . $request->input('trade_mark_name') . '%');
-                }
-            }
+            'products' => function ($query) {
+                $query->select('products.id', 'products.name', 'products.subcategory_id', 'products.trade_mark_id', 'supermarkt_products.stock');}
         ]);
-
-        // تصفية المتاجر حسب اسم المتجر
-        if ($request->has('supermarket_name')) {
-            $query->where('name', 'like', '%' . $request->input('supermarket_name') . '%');
-        }
 
         $supermarkets = $query->get();
 

@@ -21,11 +21,17 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-squares-plus';
+
     protected static ?string $navigationLabel = 'المنتجات';
+
     protected static ?string $navigationGroup = 'إدارة المتجر';
+
     protected static ?int $navigationSort = 5;
+
     protected static ?string $recordTitleAttribute = 'name';
+
 //                            return static ::getmodel()::count();
+
 public static function getNavigationBadge(): ?string
 {
     $count = static::getModel()::query()
@@ -159,7 +165,7 @@ public static function getNavigationBadge(): ?string
                             $q->where('supermarkets.id', $supermarket->id);
                         });
                     }
-                     else {
+                    else {
                         $query->whereRaw('0 = 1');
                     }
                 }

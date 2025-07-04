@@ -34,11 +34,13 @@ class AdminPanelProvider extends PanelProvider
             //     ->label('setting')
 
             // ])
+            // ->brandLogo('storage\IMG_20250702_172443_401.png')
+            ->favicon('storage\IMG_20250702_172443_401.png')
+            ->brandName('  Opty Market ')
             ->path('admin')
             ->login()
             ->authGuard('web')
             ->sidebarCollapsibleOnDesktop() //! جعل اللوحة الجانبية قابلة للطي
-            ->brandName('  Opty Market ')
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
                 fn (): string =>

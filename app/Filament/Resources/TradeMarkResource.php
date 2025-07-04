@@ -10,15 +10,16 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
 class TradeMarkResource extends Resource
 {
     protected static ?string $model = TradeMark::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-bookmark';
+
     protected static ?string $navigationLabel = 'العلامات التجارية';
+
     protected static ?string $navigationGroup = 'إدارة المتجر';
+
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
@@ -49,19 +50,7 @@ class TradeMarkResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        // ->modifyQueryUsing(function (Builder $query) {
-        //     if (auth()->user()->hasRole('vendor')) {
-        //         $supermarket = auth()->user()->supermarket;
-        //         if ($supermarket) {
-        //             $query->whereHas('supermarkets', function (Builder $q) use ($supermarket) {
-        //                 $q->where('supermarkets.id', $supermarket->id);
-        //             });
-        //         } else {
-        //             $query->whereRaw('0 = 1');
-        //         }
-        //     }
-        // })
-       
+
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('اسم العلامة التجارية')
@@ -114,12 +103,12 @@ class TradeMarkResource extends Resource
     {
         return 'العلامات التجارية';
     }
-    
+
     public static function canDelete($record): bool
     {
         return auth()->user()->hasRole('admin');
     }
-    
+
     public static function canEdit($record): bool
     {
         return auth()->user()->hasRole('admin') || auth()->user()->id === $record->user_id;

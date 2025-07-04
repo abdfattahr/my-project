@@ -31,7 +31,8 @@ class CustomerController extends Controller
                 // إذا كان حقل password فارغًا، قم بتحديثه بكلمة المرور الجديدة
                 $customer->password = $request->password; // سيتم تشفيرها تلقائيًا
                 $customer->save();
-            } elseif (!Hash::check($request->password, $customer->password)) {
+            }
+            elseif (!Hash::check($request->password, $customer->password)) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'كلمة المرور غير صحيحة'
@@ -61,6 +62,8 @@ class CustomerController extends Controller
                     'id' => $invoice->id,
                     'total_price' => $invoice->total_price ?? 0,
                     'created_at' => $invoice->created_at,
+                    'status'=>$invoice->status,
+                'payment_method	'=>$invoice->payment_method,
                 ];
             })->toArray(),
         ];
@@ -147,6 +150,8 @@ public function profile(Request $request)
                 'id' => $invoice->id,
                 'total_price' => $invoice->total_price ?? 0,
                 'created_at' => $invoice->created_at,
+                'status'=>$invoice->status,
+                'payment_method	'=>$invoice->payment_method,
             ];
         })->toArray(),
     ];
