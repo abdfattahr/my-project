@@ -30,7 +30,6 @@ class ProductResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-//                            return static ::getmodel()::count();
 
 public static function getNavigationBadge(): ?string
 {
@@ -129,12 +128,7 @@ public static function getNavigationBadge(): ?string
                         ->required()
                         ->disk('public')
                         ->directory('products')
-                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif'])
                         ->rules(['nullable'])
-                        ->validationMessages([
-                            'image' => 'يجب أن يكون الملف صورة.',
-                            'max' => 'يجب ألا يتجاوز حجم الصورة 2 ميجابايت.',
-                        ])
                         ->nullable(),
                     Forms\Components\MarkdownEditor::make('description')
                         ->label('وصف المنتج')

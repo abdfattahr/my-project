@@ -62,84 +62,113 @@ class InvoiceResource extends Resource
                     ->disabled(),
             ]);
     }
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->query(
-                Invoice::query()
-                    ->when(
-                        auth()->user()->hasRole('vendor') && !auth()->user()->hasRole('admin'),
-                        fn ($query) => $query->where('supermarket_id', auth()->user()->supermarket?->id)
-                    )
-                    ->with(['supermarket', 'customer'])
-            )
-            ->columns([
-                Tables\Columns\TextColumn::make('id')->label('رقم الفاتورة'),
-                Tables\Columns\TextColumn::make('total_price')
-                    ->label('إجمالي السعر')
-                    ->formatStateUsing(fn ($state) => number_format($state, 2) . ' ل.س'),
-                Tables\Columns\TextColumn::make('information')->label('المعلومات'),
-                Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
-                    ->badge()
-                    ->color(fn ($state) => match ($state) {
-                        'pending' => 'warning',
-                        'accepted' => 'success',
-                        'cancelled' => 'danger',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'pending' => 'معلق',
-                        'accepted' => 'مقبول',
-                        'cancelled' => 'ملغى',
-                        default => 'غير معروف',
-                    }),
-                Tables\Columns\TextColumn::make('payment_method')
-                    ->label('طريقة الدفع')
-                    ->badge()
-                    ->color(fn ($state) => match ($state) {
-                        'cash' => 'success',
-                        'points' => 'info',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'cash' => 'كاش',
-                        'points' => 'نقاط',
-                        default => 'غير معروف',
-                    }),
-                Tables\Columns\TextColumn::make('supermarket.name')->label('اسم المتجر'),
-                Tables\Columns\TextColumn::make('customer.name')->label('اسم الزبون')->searchable(),
-                Tables\Columns\TextColumn::make('customer.phone_number')->label('رقم الزبون')->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime(),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('customer_id')
-                    ->label('الزبون')
-                    ->relationship('customer', 'name')
-                    ->searchable()
-                    ->preload(),
-                Tables\Filters\SelectFilter::make('status')
-                    ->label('الحالة')
-                    ->options([
-                        'pending' => 'معلق',
-                        'accepted' => 'مقبول',
-                        'cancelled' => 'ملغى',
-                    ]),
-                Tables\Filters\SelectFilter::make('payment_method')
-                    ->label('طريقة الدفع')
-                    ->options([
-                        'cash' => 'نقدًا',
-                        'points' => 'نقاط',
-                    ]),
-            ])
-            ->actions([
+   public static function table(Table $table): Table
+{
+    return $table
+        ->query(
+            Invoice::query()
+                ->when(
+                    auth()->user()->hasRole('vendor') && !auth()->user()->hasRole('admin'),
+                    fn ($query) => $query->where('supermarket_id', auth()->user()->supermarket?->id)
+                )
+                ->with(['supermarket', 'customer'])
+        )
+        ->columns([
+            Tables\Columns\TextColumn::make('id')->label('رقم الفاتورة'),
+            Tables\Columns\TextColumn::make('total_price')
+                ->label('إجمالي السعر')
+                ->formatStateUsing(fn ($state) => number_format($state, 2) . ' ل.س'),
+            Tables\Columns\TextColumn::make('information')->label('المعلومات'),
+            Tables\Columns\TextColumn::make('status')
+                ->label('الحالة')
+                ->badge()
+                ->color(fn ($state) => match ($state) {
+                    'pending' => 'warning',
+                    'accepted' => 'success',
+                    'cancelled' => 'danger',
+                    default => 'gray',
+                })
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'pending' => 'معلق',
+                    'accepted' => 'مقبول',
+                    'cancelled' => 'ملغى',
+                    default => 'غير معروف',
+                }),
+            Tables\Columns\TextColumn::make('payment_method')
+                ->label('طريقة الدفع')
+                ->badge()
+                ->color(fn ($state) => match ($state) {
+                    'cash' => 'success',
+                    'points' => 'info',
+                    default => 'gray',
+                })
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'cash' => 'كاش',
+                    'points' => 'نقاط',
+                    default => 'غير معروف',
+                }),
+            Tables\Columns\TextColumn::make('supermarket.name')->label('اسم المتجر'),
+            Tables\Columns\TextColumn::make('customer.name')->label('اسم الزبون')->searchable(),
+            Tables\Columns\TextColumn::make('customer.phone_number')->label('رقم الزبون')->searchable(),
+            Tables\Columns\TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime(),
+        ])
+        ->filters([
+            Tables\Filters\SelectFilter::make('customer_id')
+                ->label('الزبون')
+                ->relationship('customer', 'name')
+                ->searchable()
+                ->preload(),
+            Tables\Filters\SelectFilter::make('status')
+                ->label('الحالة')
+                ->options([
+                    'pending' => 'معلق',
+                    'accepted' => 'مقبول',
+                    'cancelled' => 'ملغى',
+                ]),
+            Tables\Filters\SelectFilter::make('payment_method')
+                ->label('طريقة الدفع')
+                ->options([
+                    'cash' => 'نقدًا',
+                    'points' => 'نقاط',
+                ]),
+        ])
+        ->actions([
+            Tables\Actions\ViewAction::make()
+            ->label('عرض التفاصيل'),
+            Tables\Actions\EditAction::make()
+                ->label('تعديل')
+                ->visible(fn () => auth()->user()->hasRole('admin')),
+            // Tables\Actions\DeleteAction::make()
+            //     ->label('حذف')
+            //     ->visible(fn () => auth()->user()->hasRole('admin')),
+        //     Tables\Actions\Action::make('merge_orders')
+        //         ->label('تجميع الطلبات')
+        //         ->icon('heroicon-s-arrows-pointing-in')
+        //         ->visible(fn () => auth()->user()->hasRole('admin'))
+        //         ->form([
+        //             Forms\Components\Select::make('order_ids')
+        //                 ->label('اختر الطلبات')
+        //                 ->multiple()
+        //                 ->options(function () {
+        //                     return \App\Models\Order::whereNull('invoice_id')
+        //                         ->orWhere('status', 'pending')
+        //                         ->pluck('id', 'id');
+        //                 })
+        //                 ->required(),
+        //         ])
+        //         ->action(function (array $data, $record) {
+        //             $orders = \App\Models\Order::whereIn('id', $data['order_ids'])->get();
+        //             foreach ($orders as $order) {
+        //                 $order->update(['invoice_id' => $record->id]);
+        //             }
+        //             $record->update([
+        //                 'total_price' => $record->orders->sum(fn ($order) => $order->unit_price * $order->amount),
+        //             ]);
 
-                Tables\Actions\ViewAction::make()->label('عرض التفاصيل'),
-                Tables\Actions\EditAction::make()->label('تعديل')->visible(fn () => auth()->user()->hasRole('admin')), // التعديل للمدير فقط
-                Tables\Actions\DeleteAction::make()->label('حذف')->visible(fn () => auth()->user()->hasRole('admin')),
-            ],position:ActionsPosition::BeforeColumns)
-            ->bulkActions([]);
-    }
+                // ->successNotificationTitle('تم تجميع الطلبات بنجاح'),
+        ], position: ActionsPosition::BeforeColumns)
+        ->bulkActions([]);
+}
 
     public static function getRelations(): array
     {

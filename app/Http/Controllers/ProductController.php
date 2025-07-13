@@ -15,11 +15,12 @@ class ProductController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index()
     {
+        
         $query = Supermarket::with([
             'products' => function ($query) {
-                $query->select('products.id', 'products.name', 'products.subcategory_id', 'products.trade_mark_id', 'supermarkt_products.stock');}
+                $query->select('products.id', 'products.name','products.description','products.image','products.price', 'products.subcategory_id', 'products.trade_mark_id', 'supermarkt_products.stock');}
         ]);
 
         $supermarkets = $query->get();

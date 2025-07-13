@@ -61,112 +61,132 @@ class OrderController extends Controller
             'orders' => $orders
         ], 200);
     }
+public function store(Request $request)
+{
+    $customer = $request->user();
 
-    public function store(Request $request)
-    {
-        $customer = $request->user();
-
-        if (!$customer) {
-            Log::error('فشل المصادقة في /api/customer/orders/store', [
-                'token' => $request->bearerToken(),
-                'ip' => $request->ip(),
-            ]);
-            return response()->json(['message' => 'غير مصادق عليه'], 401);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'products' => 'required|array',
-            'products.*.product_id' => 'required|exists:products,id',
-            'products.*.supermarket_id' => 'required|exists:supermarkets,id',
-            'products.*.unit_price' => 'required|numeric|min:0',
-            'products.*.amount' => 'required|integer|min:1',
-            'date_order' => 'required|date',
-            'location' => 'required|string',
-            'payment_method' => 'required|in:cash,points', // إضافة التحقق من طريقة الدفع
+    if (!$customer) {
+        Log::error('فشل المصادقة في /api/customer/orders/store', [
+            'token' => $request->bearerToken(),
+            'ip' => $request->ip(),
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'فشل التحقق من البيانات',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $orders = [];
-        $invoices = [];
-
-        $productsBySupermarket = collect($request->products)->groupBy('supermarket_id');
-
-        foreach ($productsBySupermarket as $supermarketId => $products) {
-            $totalPrice = 0;
-
-            foreach ($products as $product) {
-                $supermarktProduct = SupermarktProduct::where('supermarket_id', $product['supermarket_id'])
-                    ->where('product_id', $product['product_id'])
-                    ->first();
-
-                if (!$supermarktProduct) {
-                    return response()->json([
-                        'message' => "المنتج {$product['product_id']} غير متوفر في المتجر {$product['supermarket_id']}"
-                    ], 404);
-                }
-
-                if ($supermarktProduct->stock < $product['amount']) {
-                    return response()->json([
-                        'message' => "الكمية غير متوفرة في المخزون للمنتج {$product['product_id']}",
-                        'available_stock' => $supermarktProduct->stock
-                    ], 400);
-                }
-
-                $totalPrice += $product['unit_price'] * $product['amount'];
-            }
-
-            $invoice = $this->createInvoiceForOrder($customer->id, $supermarketId, $totalPrice, $request->payment_method);
-            $invoices[] = $invoice;
-
-            foreach ($products as $product) {
-                $order = Order::create([
-                    'invoice_id' => $invoice->id,
-                    'product_id' => $product['product_id'],
-                    'unit_price' => $product['unit_price'],
-                    'amount' => $product['amount'],
-                    'date_order' => $request->date_order,
-                    'location' => $request->location,
-                    'status' => 'pending',
-                ]);
-
-                $supermarktProduct = SupermarktProduct::where('supermarket_id', $product['supermarket_id'])
-                    ->where('product_id', $product['product_id'])
-                    ->first();
-                $supermarktProduct->decrement('stock', $product['amount']);
-
-                $orders[] = [
-                    'id' => $order->id,
-                    'product' => $order->product ? [
-                        'id' => $order->product->id,
-                        'name' => $order->product->name,
-                        'price' => $order->product->price,
-                        'image' => $order->product->image,
-                    ] : null,
-                    'unit_price' => $order->unit_price,
-                    'amount' => $order->amount,
-                    'date_order' => $order->date_order,
-                    'location' => $order->location,
-                    'status' => $order->status,
-                    'customer_name' => $customer->name,
-                    'supermarket_name' => $invoice->supermarket ? $invoice->supermarket->name : null,
-                    'created_at' => $order->created_at,
-                ];
-            }
-        }
-
-        return response()->json([
-            'message' => 'تم إنشاء الطلبات بنجاح',
-            'orders' => $orders,
-            'invoices' => $invoices
-        ], 201);
+        return response()->json(['message' => 'غير مصادق عليه'], 401);
     }
 
+    $validator = Validator::make($request->all(), [
+        'products' => 'required|array',
+        'products.*.product_id' => 'required|exists:products,id',
+        'products.*.supermarket_id' => 'required|exists:supermarkets,id',
+        'products.*.unit_price' => 'required|numeric|min:0',
+        'products.*.amount' => 'required|integer|min:1',
+        'date_order' => 'required|date',
+        'location' => 'required|string',
+        'payment_method' => 'required|in:cash,points',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'فشل التحقق من البيانات',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    $orders = [];
+    $invoices = [];
+
+    $productsBySupermarket = collect($request->products)->groupBy('supermarket_id');
+
+    foreach ($productsBySupermarket as $supermarketId => $products) {
+        // البحث عن فاتورة مفتوحة لنفس العميل والمتجر
+        $invoice = Invoice::where('customer_id', $customer->id)
+            ->where('supermarket_id', $supermarketId)
+            ->where('status', 'pending')
+            ->first();
+
+        $totalPrice = 0;
+        foreach ($products as $product) {
+            $supermarktProduct = SupermarktProduct::where('supermarket_id', $product['supermarket_id'])
+                ->where('product_id', $product['product_id'])
+                ->first();
+
+            if (!$supermarktProduct) {
+                return response()->json([
+                    'message' => "المنتج {$product['product_id']} غير متوفر في المتجر {$product['supermarket_id']}"
+                ], 404);
+            }
+
+            if ($supermarktProduct->stock < $product['amount']) {
+                return response()->json([
+                    'message' => "الكمية غير متوفرة في المخزون للمنتج {$product['product_id']}",
+                    'available_stock' => $supermarktProduct->stock
+                ], 400);
+            }
+
+            $totalPrice += $product['unit_price'] * $product['amount'];
+        }
+
+        // إذا لم توجد فاتورة مفتوحة، أنشئ واحدة جديدة
+        if (!$invoice) {
+            $invoice = Invoice::create([
+                'customer_id' => $customer->id,
+                'supermarket_id' => $supermarketId,
+                'total_price' => $totalPrice,
+                'information' => 'فاتورة تم إنشاؤها تلقائيًا عند إنشاء طلب',
+                'payment_method' => $request->payment_method,
+                'status' => 'pending',
+            ]);
+        } else {
+            // تحديث إجمالي السعر للفاتورة الموجودة
+            $invoice->update([
+                'total_price' => $invoice->total_price + $totalPrice,
+            ]);
+        }
+
+        $invoices[] = $invoice;
+
+        // إنشاء الطلبات وإضافتها إلى الفاتورة
+        foreach ($products as $product) {
+            $order = Order::create([
+                'invoice_id' => $invoice->id,
+                'product_id' => $product['product_id'],
+                'unit_price' => $product['unit_price'],
+                'amount' => $product['amount'],
+                'date_order' => $request->date_order,
+                'location' => $request->location,
+                'status' => 'pending',
+            ]);
+
+            $supermarktProduct = SupermarktProduct::where('supermarket_id', $product['supermarket_id'])
+                ->where('product_id', $product['product_id'])
+                ->first();
+            $supermarktProduct->decrement('stock', $product['amount']);
+
+            $orders[] = [
+                'id' => $order->id,
+                'product' => $order->product ? [
+                    'id' => $order->product->id,
+                    'name' => $order->product->name,
+                    'price' => $order->product->price,
+                    'image' => $order->product->image,
+                ] : null,
+                'unit_price' => $order->unit_price,
+                'amount' => $order->amount,
+                'date_order' => $order->date_order,
+                'location' => $order->location,
+                'status' => $order->status,
+                'customer_name' => $customer->name,
+                'supermarket_name' => $invoice->supermarket ? $invoice->supermarket->name : null,
+                'created_at' => $order->created_at,
+            ];
+        }
+    }
+
+    return response()->json([
+        'message' => 'تم إنشاء الطلبات بنجاح',
+        'orders' => $orders,
+        'invoices' => $invoices
+    ], 201);
+}
     public function update(Request $request, $orderId)
     {
         $customer = $request->user();

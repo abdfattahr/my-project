@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable, HasRoles; 
+    use Notifiable, HasRoles;
 
     protected $fillable = [
         'name',
@@ -33,6 +33,8 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasOne(Supermarket::class, 'user_id');
     }
+
+
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
         if ($this->hasRole('admin')) {

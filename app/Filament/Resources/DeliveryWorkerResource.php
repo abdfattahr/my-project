@@ -25,7 +25,7 @@ class DeliveryWorkerResource extends Resource
     protected static ?string $navigationLabel = 'عمال التوصيل';
 
     protected static ?string $navigationGroup = 'إدارة عمال التوصيل';
-    
+
     protected static ?int $navigationSort = 9;
 
     public static function form(Form $form): Form
@@ -102,6 +102,7 @@ class DeliveryWorkerResource extends Resource
     {
         return $table
             ->columns([
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('اسم عامل التوصيل')
                     ->searchable(),

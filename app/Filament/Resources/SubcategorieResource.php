@@ -34,13 +34,13 @@ class SubcategorieResource extends Resource
                                 Forms\Components\TextInput::make('name')
                                     ->label('اسم القسم الفرعي')
                                     ->required()
-                                    ->maxLength(30)
-                                    ->rules(['string', 'min:3', 'max:30', 'regex:/^[\p{L}\s]+$/u'])
+                                    ->maxLength(80)
+                                    ->rules(['string', 'min:3', 'max:80', 'regex:/^[\p{L}\s]+$/u'])
                                     ->validationMessages([
                                         'required' => 'اسم القسم الفرعي مطلوب.',
                                         'string' => 'يجب أن يكون اسم القسم الفرعي نصًا.',
                                         'min' => 'يجب أن يحتوي اسم القسم الفرعي على 3 أحرف على الأقل.',
-                                        'max' => 'يجب ألا يتجاوز اسم القسم الفرعي 30 حرفًا.',
+                                        'max' => 'يجب ألا يتجاوز اسم القسم الفرعي 80 حرفًا.',
                                         'regex' => 'اسم القسم الفرعي يجب أن يحتوي فقط على حروف ومسافات (الأرقام والشرطات غير مسموح بها).',
                                     ]),
 

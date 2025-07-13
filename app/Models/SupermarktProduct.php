@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class SupermarktProduct extends Model
 {
-    protected $table = 'supermarkt_products'; // استخدم أحرف صغيرة لتتطابق مع الهجرة
+    protected $table = 'supermarkt_products';
+
     protected $fillable = ['supermarket_id','product_id','stock',];
 
     public function supermarket()

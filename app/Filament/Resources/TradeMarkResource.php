@@ -50,7 +50,18 @@ class TradeMarkResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-
+        ->modifyQueryUsing(function (Builder $query) {
+            // إذا كان المستخدم تاجرًا (Vendor)، قم بتصفية المنتجات بناءً على متجره فقط
+            if (auth()->user()->hasRole('vendor')) {
+                $supermarket = auth()->user()->supermarket;
+                if ($supermarket) {
+                    $query->where('supermarket_id', $supermarket->id);
+                } else {
+                    $query->whereRaw('0 = 1'); // منع رؤية أي منتجات إذا لم يكن للتاجر متجر
+                }
+            }
+            // الـ Admin يمكنه رؤية جميع المنتجات بدون تصفية
+        })
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('اسم العلامة التجارية')
@@ -107,6 +118,7 @@ class TradeMarkResource extends Resource
     public static function canDelete($record): bool
     {
         return auth()->user()->hasRole('admin');
+        
     }
 
     public static function canEdit($record): bool

@@ -365,12 +365,20 @@ class OrderResource extends Resource
     {
         return __('الطلبات 🛍');
     }
+public static function boot()
+{
+    parent::boot();
 
-    public static function boot()
-    {
-        parent::boot();
+    static::created(function (Order $order) {
+        // البحث عن فاتورة مفتوحة لنفس العميل والمتجر خلال الدقيقة الأخيرة
+        $invoice = Invoice::where('customer_id', auth()->user()->id)
+            ->where('supermarket_id', $order->supermarket_id)
+            ->where('status', 'pending')
+            ->where('created_at', '>=', now()->subMinute()) // الدقيقة الأخيرة
+            ->first();
 
-        static::created(function (Order $order) {
+        // إذا لم توجد فاتورة مفتوحة، أنشئ واحدة جديدة
+        if (!$invoice) {
             $invoice = Invoice::create([
                 'total_price' => $order->unit_price * $order->amount,
                 'information' => 'فاتورة تم إنشاؤها تلقائيًا لطلب #' . $order->id,
@@ -379,34 +387,41 @@ class OrderResource extends Resource
                 'supermarket_id' => $order->supermarket_id,
                 'customer_id' => auth()->user()->id,
             ]);
+        } else {
+            // تحديث إجمالي السعر للفاتورة الموجودة
+            $invoice->update([
+                'total_price' => $invoice->orders->sum(fn ($order) => $order->unit_price * $order->amount),
+            ]);
+        }
 
-            $order->update(['invoice_id' => $invoice->id]);
+        // ربط الطلب بالفاتورة
+        $order->update(['invoice_id' => $invoice->id]);
 
-            // إرسال إشعار إلى التاجر المرتبط بالسوبرماركت أو المدير
-            $vendor = User::whereHas('roles', fn ($query) => $query->where('name', 'vendor'))
-                ->whereHas('supermarket', fn ($query) => $query->where('id', $order->supermarket_id))
-                ->first();
+        // إرسال إشعار إلى التاجر المرتبط بالسوبرماركت أو المدير
+        $vendor = User::whereHas('roles', fn ($query) => $query->where('name', 'vendor'))
+            ->whereHas('supermarket', fn ($query) => $query->where('id', $order->supermarket_id))
+            ->first();
 
-            if ($vendor) {
-                Notification::make()
-                    ->title('طلب جديد معلق')
-                    ->body('تم استلام طلب جديد #' . $order->id . ' من العميل في متجرك.')
-                    ->success()
-                    ->sendTo($vendor); // إرسال الإشعار إلى التاجر
-            }
+        if ($vendor) {
+            Notification::make()
+                ->title('طلب جديد معلق')
+                ->body('تم استلام طلب جديد #' . $order->id . ' من العميل في متجرك.')
+                ->success()
+                ->sendTo($vendor);
+        }
 
-            // إرسال إشعار إلى جميع المديرين
-            $admins = User::whereHas('roles', fn ($query) => $query->where('name', 'admin'))->get();
-            foreach ($admins as $admin) {
-                Notification::make()
-                    ->title('طلب جديد معلق')
-                    ->body('تم استلام طلب جديد #' . $order->id . ' في المتجر #' . $order->supermarket_id . '.')
-                    ->success()
-                    ->sendTo($admin);
-            }
+        // إرسال إشعار إلى جميع المديرين
+        $admins = User::whereHas('roles', fn ($query) => $query->where('name', 'admin'))->get();
+        foreach ($admins as $admin) {
+            Notification::make()
+                ->title('طلب جديد معلق')
+                ->body('تم استلام طلب جديد #' . $order->id . ' في المتجر #' . $order->supermarket_id . '.')
+                ->success()
+                ->sendTo($admin);
+        }
 
-            // إطلاق الحدث
-            event(new \App\Events\OrderCreated($order));
-        });
-    }
+        // إطلاق الحدث
+        event(new \App\Events\OrderCreated($order));
+    });
+}
 }

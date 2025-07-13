@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Invoice extends Model
 {
-    protected $fillable = ['id','total_price', 'information', 'customer_id', 'supermarket_id','payment_method','status'];
+    protected $fillable = ['id', 'total_price', 'information', 'customer_id', 'supermarket_id', 'payment_method', 'status'];
 
     public $timestamps = true;
 
@@ -24,9 +23,17 @@ class Invoice extends Model
     {
         return $this->hasMany(Order::class, 'invoice_id');
     }
+
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'order')->withPivot([ 'unit_price', 'amount', 'date_order','location','status']);
+        return $this->belongsToMany(Product::class, 'order')->withPivot(['unit_price', 'amount', 'date_order', 'location', 'status']);
     }
 
+    // حساب إجمالي السعر ديناميكيًا
+    public function getTotalPriceAttribute()
+    {
+        return $this->orders->sum(function ($order) {
+            return $order->unit_price * $order->amount;
+        });
+    }
 }

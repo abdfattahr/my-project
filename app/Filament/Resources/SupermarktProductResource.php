@@ -57,8 +57,8 @@ class SupermarktProductResource extends Resource
                         Forms\Components\TextInput::make('stock')
                             ->label('المخزون')
                             ->numeric()
-                            ->default(0)
-                            ->minValue(0)
+                            ->default(1)
+                            ->minValue(1)
                             ->required(),
                             Forms\Components\Select::make('product_id')
                             ->label('المنتج')
@@ -144,9 +144,9 @@ class SupermarktProductResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSupermarktProducts::route('/'),
+            'index'  => Pages\ListSupermarktProducts::route('/'),
             'create' => Pages\CreateSupermarktProduct::route('/create'),
-            'edit' => Pages\EditSupermarktProduct::route('/{record}/edit'),
+            'edit'   => Pages\EditSupermarktProduct::route('/{record}/edit'),
         ];
     }
 
